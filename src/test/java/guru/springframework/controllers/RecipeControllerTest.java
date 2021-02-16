@@ -65,11 +65,19 @@ public class RecipeControllerTest {
     @Test
     public void testGetRecipeNumberFormatException() throws Exception {
 
-        //when(recipeService.findById(anyLong())).thenThrow(NumberFormatException.class);
-
         mockMvc.perform(get("/recipe/asdf/show"))
                 .andExpect(status().isBadRequest())
                 .andExpect(view().name("400error"));
+    }
+
+    @Test
+    public void testGetNewRecipeForm() throws Exception {
+        RecipeCommand command = new RecipeCommand();
+
+        mockMvc.perform(get("/recipe/new"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("recipe/recipeform"))
+                .andExpect(model().attributeExists("recipe"));
     }
 
     @Test
@@ -99,20 +107,12 @@ public class RecipeControllerTest {
         mockMvc.perform(post("/recipe")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("id", "")
+                .param("cookTime", "3000")
 
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("recipe"))
                 .andExpect(view().name("recipe/recipeform"));
-    }
-
-    @Test
-    public void testDeleteAction() throws Exception {
-        mockMvc.perform(get("/recipe/1/delete"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/"));
-
-        verify(recipeService, times(1)).deleteById(anyLong());
     }
 
     @Test
@@ -126,5 +126,14 @@ public class RecipeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("recipe/recipeform"))
                 .andExpect(model().attributeExists("recipe"));
+    }
+
+    @Test
+    public void testDeleteAction() throws Exception {
+        mockMvc.perform(get("/recipe/1/delete"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/"));
+
+        verify(recipeService, times(1)).deleteById(anyLong());
     }
 }
